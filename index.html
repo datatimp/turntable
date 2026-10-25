@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Record Player Shopping List</title>
+<meta name="description" content="Everything you need to start playing records, in the order to buy it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f1e9;
+    --surface: #fffdf9;
+    --ink: #221d18;
+    --muted: #6b6158;
+    --line: #e2d8ca;
+    --accent: #a2322a;
+    --accent-ink: #ffffff;
+    --accent-soft: #f4e2de;
+    --shadow: 0 1px 2px rgb(34 29 24 / 6%), 0 8px 24px rgb(34 29 24 / 6%);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171412;
+      --surface: #211d1a;
+      --ink: #f1ebe3;
+      --muted: #a89e93;
+      --line: #3a332d;
+      --accent: #e0675c;
+      --accent-ink: #1a1210;
+      --accent-soft: #3a2421;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171412;
+    --surface: #211d1a;
+    --ink: #f1ebe3;
+    --muted: #a89e93;
+    --line: #3a332d;
+    --accent: #e0675c;
+    --accent-ink: #1a1210;
+    --accent-soft: #3a2421;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 17px/1.55 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 40px 16px 56px; }
+
+  header { margin-bottom: 32px; }
+  .record {
+    width: 56px; height: 56px; border-radius: 50%; margin-bottom: 20px;
+    background:
+      radial-gradient(circle, var(--accent) 0 9px, var(--ink) 10px 11px, transparent 12px),
+      repeating-radial-gradient(circle, var(--ink) 0 2px, #3b342e 2px 3px);
+  }
+  h1, h2 { font-family: Fraunces, Georgia, serif; line-height: 1.15; margin: 0; }
+  h1 { font-size: clamp(30px, 7vw, 42px); letter-spacing: -0.01em; }
+  .lede { color: var(--muted); margin: 12px 0 0; max-width: 34em; }
+
+  ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card-body { padding: 20px; }
+  .step-label {
+    display: inline-block;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  h2 { font-size: 24px; }
+  .price { font-weight: 600; margin: 4px 0 0; }
+
+  .photo {
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    aspect-ratio: 16 / 10;
+    border-bottom: 1px solid var(--line);
+  }
+  .photo img { width: 100%; height: 100%; object-fit: contain; padding: 12px; }
+
+  ul.why { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+  ul.why li { padding-left: 26px; position: relative; }
+  ul.why li::before {
+    content: ""; position: absolute; left: 4px; top: 0.55em;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent);
+  }
+  ul.why strong { font-weight: 600; }
+
+  .tip {
+    margin: 18px 0 0; padding: 12px 14px;
+    background: var(--accent-soft); border-radius: 10px;
+    font-size: 15px;
+  }
+
+  .buttons { display: grid; gap: 10px; margin-top: 20px; }
+  .btn {
+    display: block; text-align: center; text-decoration: none;
+    font-weight: 600; padding: 14px 18px; border-radius: 12px;
+    min-height: 48px;
+  }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-secondary { color: var(--ink); border: 1px solid var(--line); }
+  .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  @media (min-width: 560px) {
+    .buttons { grid-template-columns: 1fr 1fr; }
+  }
+  @media (hover: hover) {
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-secondary:hover { border-color: var(--muted); }
+  }
+
+  .card.pending { background: transparent; border-style: dashed; box-shadow: none; }
+  .card.pending h2 { color: var(--muted); }
+  .card.pending p { color: var(--muted); margin: 8px 0 0; }
+  .soon {
+    display: inline-block; margin-top: 14px;
+    font-size: 13px; font-weight: 600;
+    padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+
+  footer { margin-top: 36px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="record" aria-hidden="true"></div>
+    <h1>Record Player Shopping List</h1>
+    <p class="lede">Everything you need to start playing records. Buy in order, top to bottom. Step 1 is ready now. The rest is coming soon.</p>
+  </header>
+
+  <ol class="steps">
+
+    <li class="card">
+      <div class="photo">
+        <img src="https://www.denon.com/dw/image/v2/bgjh_prd/on/demandware.static/-/Sites-master-catalog-soundunited/default/dw3ad6cff0/denon/PDP_images/Turntables/DP-300F-Black/DP-300F-Black_front-side.png?sw=900"
+             alt="Denon DP-300F record player in black with the dust cover closed"
+             width="900" height="562" loading="eager">
+      </div>
+      <div class="card-body">
+        <span class="step-label">Step 1 · Record player</span>
+        <h2>Denon DP-300F</h2>
+        <p class="price">About $499</p>
+
+        <ul class="why">
+          <li><strong>Fully automatic.</strong> Press start and the arm sets itself down. At the end it lifts and goes back on its own. Easy on records, easy to use.</li>
+          <li><strong>Plugs straight into speakers.</strong> It has the extra electronics built in, so you don't need another box to get started.</li>
+          <li><strong>Built to last.</strong> Denon has made good stereo gear for decades. This one should play for years.</li>
+        </ul>
+
+        <p class="tip">On Amazon, check that it says <strong>New</strong>, not "Renewed."</p>
+
+        <div class="buttons">
+          <a class="btn btn-primary" href="https://www.amazon.com/dp/B000FMNBXG" target="_blank" rel="noopener">Buy on Amazon</a>
+          <a class="btn btn-secondary" href="https://www.denon.com/en-us/product/turntables/dp-300f/136724.html" target="_blank" rel="noopener">Buy from Denon</a>
+        </div>
+      </div>
+    </li>
+
+    <li class="card pending">
+      <div class="card-body">
+        <span class="step-label">Step 2 · Speakers</span>
+        <h2>Powered speakers</h2>
+        <p>You need these to hear anything. They plug into the wall and right into the record player.</p>
+        <span class="soon">Coming soon</span>
+      </div>
+    </li>
+
+    <li class="card pending">
+      <div class="card-body">
+        <span class="step-label">Step 3 · Receiver (optional)</span>
+        <h2>Receiver</h2>
+        <p>Not needed to start. A receiver is for adding bigger speakers later.</p>
+        <span class="soon">Coming soon</span>
+      </div>
+    </li>
+
+  </ol>
+
+  <footer>Prices and stock checked October 2026.</footer>
+
+</div>
+</body>
+</html>
