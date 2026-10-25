@@ -55,16 +55,48 @@
   }
   .wrap { max-width: 720px; margin: 0 auto; padding: 40px 16px 56px; }
 
-  header { margin-bottom: 32px; }
+  header { margin-bottom: 20px; }
   .record {
     width: 56px; height: 56px; border-radius: 50%; margin-bottom: 20px;
     background:
       radial-gradient(circle, var(--accent) 0 9px, var(--ink) 10px 11px, transparent 12px),
       repeating-radial-gradient(circle, var(--ink) 0 2px, #3b342e 2px 3px);
   }
-  h1, h2 { font-family: Fraunces, Georgia, serif; line-height: 1.15; margin: 0; }
+  h1, h2, h3 { font-family: Fraunces, Georgia, serif; line-height: 1.15; margin: 0; }
   h1 { font-size: clamp(30px, 7vw, 42px); letter-spacing: -0.01em; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 20px; }
   .lede { color: var(--muted); margin: 12px 0 0; max-width: 34em; }
+
+  /* Budget picker */
+  .picker {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg);
+    padding: 12px 0 14px;
+    margin-bottom: 8px;
+  }
+  .picker-label { font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 8px; }
+  .tiers {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 14px; padding: 5px;
+  }
+  @media (min-width: 560px) {
+    .tiers { grid-template-columns: repeat(4, 1fr); }
+  }
+  .tiers button {
+    font: inherit; color: var(--ink); background: transparent;
+    border: 0; border-radius: 10px; padding: 8px 4px; cursor: pointer;
+    min-height: 52px; line-height: 1.2;
+  }
+  .tiers button span { display: block; }
+  .tiers .t-name { font-weight: 600; font-size: 15px; }
+  .tiers .t-range { font-size: 13px; color: var(--muted); }
+  .tiers button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .tiers button[aria-pressed="true"] .t-range { color: var(--accent-ink); opacity: 0.85; }
+  .tiers button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .total { margin: 10px 0 0; font-size: 15px; color: var(--muted); }
+  .total strong { color: var(--ink); }
 
   ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
   .card {
@@ -81,8 +113,8 @@
     color: var(--accent);
     margin-bottom: 6px;
   }
-  h2 { font-size: 24px; }
   .price { font-weight: 600; margin: 4px 0 0; }
+  .card-body > p:not(.price):not(.tip) { margin: 8px 0 0; }
 
   .photo {
     background: #fff;
@@ -90,7 +122,7 @@
     aspect-ratio: 16 / 10;
     border-bottom: 1px solid var(--line);
   }
-  .photo img { width: 100%; height: 100%; object-fit: contain; padding: 12px; }
+  .photo img { width: 100%; height: 100%; object-fit: contain; padding: 16px; }
 
   ul.why { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
   ul.why li { padding-left: 26px; position: relative; }
@@ -106,6 +138,7 @@
     background: var(--accent-soft); border-radius: 10px;
     font-size: 15px;
   }
+  .tip + .tip { margin-top: 10px; }
 
   .buttons { display: grid; gap: 10px; margin-top: 20px; }
   .btn {
@@ -117,21 +150,28 @@
   .btn-secondary { color: var(--ink); border: 1px solid var(--line); }
   .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   @media (min-width: 560px) {
-    .buttons { grid-template-columns: 1fr 1fr; }
+    .buttons.two { grid-template-columns: 1fr 1fr; }
   }
   @media (hover: hover) {
     .btn-primary:hover { filter: brightness(1.08); }
     .btn-secondary:hover { border-color: var(--muted); }
+    .tiers button:not([aria-pressed="true"]):hover { background: var(--accent-soft); }
   }
 
-  .card.pending { background: transparent; border-style: dashed; box-shadow: none; }
-  .card.pending h2 { color: var(--muted); }
-  .card.pending p { color: var(--muted); margin: 8px 0 0; }
-  .soon {
-    display: inline-block; margin-top: 14px;
-    font-size: 13px; font-weight: 600;
-    padding: 4px 10px; border-radius: 999px;
-    border: 1px solid var(--line); color: var(--muted);
+  /* Only the chosen budget's pick shows */
+  .pick { display: none; }
+  .pick.is-active { display: block; }
+
+  .card.skip { background: transparent; border-style: dashed; box-shadow: none; }
+
+  /* Cables */
+  .cable { padding-top: 18px; margin-top: 18px; border-top: 1px solid var(--line); }
+  .cable:first-of-type { border-top: 0; margin-top: 12px; padding-top: 0; }
+  .cable p { margin: 6px 0 0; }
+  .badge {
+    display: inline-block; font-size: 13px; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px; margin-top: 8px;
+    background: var(--accent-soft); color: var(--ink);
   }
 
   footer { margin-top: 36px; color: var(--muted); font-size: 14px; }
@@ -143,52 +183,215 @@
   <header>
     <div class="record" aria-hidden="true"></div>
     <h1>Record Player Shopping List</h1>
-    <p class="lede">Everything you need to start playing records. Buy in order, top to bottom. Step 1 is ready now. The rest is coming soon.</p>
+    <p class="lede">Everything you need to start playing records. Pick a budget, then buy the steps below.</p>
   </header>
+
+  <div class="picker">
+    <p class="picker-label" id="picker-label">Budget for the amp and speakers</p>
+    <div class="tiers" role="group" aria-labelledby="picker-label">
+      <button type="button" data-tier="1" aria-pressed="true"><span class="t-name">Starter</span><span class="t-range">$400 to $600</span></button>
+      <button type="button" data-tier="2" aria-pressed="false"><span class="t-name">Step up</span><span class="t-range">$700 to $1,000</span></button>
+      <button type="button" data-tier="3" aria-pressed="false"><span class="t-name">Best</span><span class="t-range">$1,000+</span></button>
+      <button type="button" data-tier="0" aria-pressed="false"><span class="t-name">No amp</span><span class="t-range">Powered speakers</span></button>
+    </div>
+    <p class="total" aria-live="polite">Everything together: <strong id="grand-total">about $1,050</strong></p>
+  </div>
 
   <ol class="steps">
 
+    <!-- Step 1: same for every budget -->
     <li class="card">
       <div class="photo">
         <img src="https://www.denon.com/dw/image/v2/bgjh_prd/on/demandware.static/-/Sites-master-catalog-soundunited/default/dw3ad6cff0/denon/PDP_images/Turntables/DP-300F-Black/DP-300F-Black_front-side.png?sw=900"
-             alt="Denon DP-300F record player in black with the dust cover closed"
-             width="900" height="562" loading="eager">
+             alt="Denon DP-300F record player in black" loading="eager">
       </div>
       <div class="card-body">
         <span class="step-label">Step 1 · Record player</span>
         <h2>Denon DP-300F</h2>
         <p class="price">About $499</p>
-
         <ul class="why">
           <li><strong>Fully automatic.</strong> Press start and the arm sets itself down. At the end it lifts and goes back on its own. Easy on records, easy to use.</li>
-          <li><strong>Plugs straight into speakers.</strong> It has the extra electronics built in, so you don't need another box to get started.</li>
           <li><strong>Built to last.</strong> Denon has made good stereo gear for decades. This one should play for years.</li>
         </ul>
-
         <p class="tip">On Amazon, check that it says <strong>New</strong>, not "Renewed."</p>
-
-        <div class="buttons">
+        <div class="buttons two">
           <a class="btn btn-primary" href="https://www.amazon.com/dp/B000FMNBXG" target="_blank" rel="noopener">Buy on Amazon</a>
           <a class="btn btn-secondary" href="https://www.denon.com/en-us/product/turntables/dp-300f/136724.html" target="_blank" rel="noopener">Buy from Denon</a>
         </div>
       </div>
     </li>
 
-    <li class="card pending">
+    <!-- Step 2: amp, by budget -->
+    <li class="card pick is-active" data-tier="1">
+      <div class="photo">
+        <img src="https://www.audioadvice.com/cdn/shop/files/httpswww.audioadvice.compubmediacatalogproductsosony-strdh190.jpg?v=1718142557&width=900"
+             alt="Sony STR-DH190 stereo receiver" loading="lazy">
+      </div>
       <div class="card-body">
-        <span class="step-label">Step 2 · Speakers</span>
-        <h2>Powered speakers</h2>
-        <p>You need these to hear anything. They plug into the wall and right into the record player.</p>
-        <span class="soon">Coming soon</span>
+        <span class="step-label">Step 2 · Receiver</span>
+        <h2>Sony STR-DH190</h2>
+        <p class="price">About $250</p>
+        <ul class="why">
+          <li><strong>Powers the speakers.</strong> The record player plugs into this, and this runs the speakers.</li>
+          <li><strong>Bluetooth and radio.</strong> Play music from a phone, or tune in FM.</li>
+        </ul>
+        <div class="buttons">
+          <a class="btn btn-primary" href="https://www.amazon.com/s?k=Sony+STR-DH190+stereo+receiver" target="_blank" rel="noopener">Find on Amazon</a>
+        </div>
       </div>
     </li>
 
-    <li class="card pending">
+    <li class="card pick" data-tier="2">
+      <div class="photo">
+        <img src="https://www.denon.com/dw/image/v2/bgjh_prd/on/demandware.static/-/Sites-master-catalog-soundunited/default/dw35b03555/denon/PDP_images/Amplifiers/PMA-600NE/PMA-600NE_front.png?sw=900"
+             alt="Denon PMA-600NE stereo amplifier" loading="lazy">
+      </div>
       <div class="card-body">
-        <span class="step-label">Step 3 · Receiver (optional)</span>
-        <h2>Receiver</h2>
-        <p>Not needed to start. A receiver is for adding bigger speakers later.</p>
-        <span class="soon">Coming soon</span>
+        <span class="step-label">Step 2 · Amplifier</span>
+        <h2>Denon PMA-600NE</h2>
+        <p class="price">About $599</p>
+        <ul class="why">
+          <li><strong>Powers the speakers.</strong> The record player plugs into this, and this runs the speakers.</li>
+          <li><strong>Fuller, cleaner sound.</strong> A real step up from a budget receiver. Matches the Denon record player.</li>
+          <li><strong>Bluetooth.</strong> Play music from a phone too.</li>
+        </ul>
+        <div class="buttons two">
+          <a class="btn btn-primary" href="https://www.amazon.com/s?k=Denon+PMA-600NE" target="_blank" rel="noopener">Find on Amazon</a>
+          <a class="btn btn-secondary" href="https://www.denon.com/en-us/product/amplifiers/pma-600ne/137281.html" target="_blank" rel="noopener">Buy from Denon</a>
+        </div>
+      </div>
+    </li>
+
+    <li class="card pick" data-tier="3">
+      <div class="photo">
+        <img src="https://www.denon.com/dw/image/v2/bgjh_prd/on/demandware.static/-/Sites-master-catalog-soundunited/default/dw679d81ad/denon/PDP_images/Amplifiers/PMA-900HNE/PMA-900HNE_front.png?sw=900"
+             alt="Denon PMA-900HNE stereo amplifier" loading="lazy">
+      </div>
+      <div class="card-body">
+        <span class="step-label">Step 2 · Amplifier</span>
+        <h2>Denon PMA-900HNE</h2>
+        <p class="price">About $1,049</p>
+        <ul class="why">
+          <li><strong>Powers the speakers.</strong> The record player plugs into this, and this runs the speakers.</li>
+          <li><strong>More power, more detail.</strong> Plenty to fill a room. Matches the Denon record player.</li>
+          <li><strong>Streams from a phone.</strong> AirPlay over Wi-Fi, or Bluetooth.</li>
+        </ul>
+        <div class="buttons two">
+          <a class="btn btn-primary" href="https://www.amazon.com/s?k=Denon+PMA-900HNE" target="_blank" rel="noopener">Find on Amazon</a>
+          <a class="btn btn-secondary" href="https://www.denon.com/en-us/product/amplifiers/pma-900hne/300513.html" target="_blank" rel="noopener">Buy from Denon</a>
+        </div>
+      </div>
+    </li>
+
+    <li class="card skip pick" data-tier="0">
+      <div class="card-body">
+        <span class="step-label">Step 2 · Amplifier</span>
+        <h2>Not needed</h2>
+        <p>These speakers have the amp built in. Skip to step 3.</p>
+      </div>
+    </li>
+
+    <!-- Step 3: speakers, by budget -->
+    <li class="card pick is-active" data-tier="1">
+      <div class="photo">
+        <img src="https://www.polkaudio.com/on/demandware.static/-/Sites-master-catalog-soundunited/default/dwfdad3edf/polk/PDP_Images/Home-Speakers/Bookshelf/Monitor-XT/Monitor-XT20-Black/Monitor-XT20-Black_Image_pair-angle-right-no-grille.png"
+             alt="Pair of Polk Monitor XT20 bookshelf speakers" loading="lazy">
+      </div>
+      <div class="card-body">
+        <span class="step-label">Step 3 · Speakers</span>
+        <h2>Polk Monitor XT20</h2>
+        <p class="price">About $279 a pair</p>
+        <ul class="why">
+          <li><strong>Big sound for the price.</strong> Full and lively, with real bass for their size.</li>
+          <li><strong>Shelf size.</strong> Sit on a shelf, a dresser or stands.</li>
+        </ul>
+        <div class="buttons two">
+          <a class="btn btn-primary" href="https://www.amazon.com/s?k=Polk+Monitor+XT20+pair" target="_blank" rel="noopener">Find on Amazon</a>
+          <a class="btn btn-secondary" href="https://www.polkaudio.com/en-us/product/home-speakers/bookshelf/monitor-xt20/300151.html" target="_blank" rel="noopener">Buy from Polk</a>
+        </div>
+      </div>
+    </li>
+
+    <li class="card pick" data-tier="2">
+      <div class="photo">
+        <img src="https://elac.com/img/product/db53/20260421115005.webp"
+             alt="Pair of ELAC Debut 3.0 DB53 bookshelf speakers" loading="lazy">
+      </div>
+      <div class="card-body">
+        <span class="step-label">Step 3 · Speakers</span>
+        <h2>ELAC Debut 3.0 DB53</h2>
+        <p class="price">About $399 a pair</p>
+        <ul class="why">
+          <li><strong>Smooth and detailed.</strong> Voices sound natural. Easy to listen to for hours.</li>
+          <li><strong>Shelf size.</strong> Sit on a shelf, a dresser or stands.</li>
+        </ul>
+        <div class="buttons">
+          <a class="btn btn-primary" href="https://www.amazon.com/s?k=ELAC+Debut+3.0+DB53" target="_blank" rel="noopener">Find on Amazon</a>
+        </div>
+      </div>
+    </li>
+
+    <li class="card pick" data-tier="3">
+      <div class="photo">
+        <img src="https://us.kef.com/cdn/shop/files/q3-meta_sp4089b0_product__front-side.png?v=1786947831&width=900"
+             alt="KEF Q3 Meta bookshelf speaker" loading="lazy">
+      </div>
+      <div class="card-body">
+        <span class="step-label">Step 3 · Speakers</span>
+        <h2>KEF Q3 Meta</h2>
+        <p class="price">About $899 a pair</p>
+        <ul class="why">
+          <li><strong>Clear, room-filling sound.</strong> Music sounds like it's in the room, not coming out of a box.</li>
+          <li><strong>Shelf size.</strong> Best on stands, a little out from the wall.</li>
+        </ul>
+        <div class="buttons two">
+          <a class="btn btn-primary" href="https://www.amazon.com/s?k=KEF+Q3+Meta" target="_blank" rel="noopener">Find on Amazon</a>
+          <a class="btn btn-secondary" href="https://us.kef.com/products/q3-meta" target="_blank" rel="noopener">Buy from KEF</a>
+        </div>
+      </div>
+    </li>
+
+    <li class="card pick" data-tier="0">
+      <div class="photo">
+        <img src="https://www.worldwidestereo.com/cdn/shop/files/173179_WWS1_1946x.jpg?v=1762447782"
+             alt="Pair of Kanto YU6 powered speakers in matte black" loading="lazy">
+      </div>
+      <div class="card-body">
+        <span class="step-label">Step 3 · Powered speakers</span>
+        <h2>Kanto YU6</h2>
+        <p class="price">About $580 a pair</p>
+        <ul class="why">
+          <li><strong>Amp built in.</strong> They plug into the wall, and the record player plugs straight into them. Two boxes instead of three.</li>
+          <li><strong>Bluetooth.</strong> Play music from a phone too.</li>
+        </ul>
+        <div class="buttons">
+          <a class="btn btn-primary" href="https://www.amazon.com/s?k=Kanto+YU6+powered+speakers" target="_blank" rel="noopener">Find on Amazon</a>
+        </div>
+      </div>
+    </li>
+
+    <!-- Step 4: same for every budget -->
+    <li class="card">
+      <div class="card-body">
+        <span class="step-label">Step 4 · Cables</span>
+        <h2>Hooking it up</h2>
+
+        <div class="cable">
+          <h3>Record player cable</h3>
+          <p>It comes attached to the record player. Keep the record player within about 3 feet of the <span class="pick-text" data-amp="amp" data-powered="speaker it plugs into">amp</span>.</p>
+          <span class="badge">Nothing to buy</span>
+        </div>
+
+        <div class="cable">
+          <h3>Speaker wire</h3>
+          <p class="pick-text" data-amp="Runs from the amp to each speaker. One 50 foot spool does both. Get 16 gauge, made of oxygen-free copper." data-powered="Links the two speakers together. Get 16 gauge, made of oxygen-free copper.">Runs from the amp to each speaker. One 50 foot spool does both. Get 16 gauge, made of oxygen-free copper.</p>
+          <div class="buttons">
+            <a class="btn btn-primary" href="https://www.amazon.com/s?k=16+gauge+oxygen+free+copper+speaker+wire+50+ft" target="_blank" rel="noopener">Find on Amazon</a>
+          </div>
+        </div>
+
+        <p class="tip">Setup: plug the record player into the input marked <strong>PHONO</strong>. Then set the EQ switch on the record player to <strong>OFF</strong>.</p>
+        <p class="tip">Speaker wire has one side marked with a stripe or text. Put that side on red (+) at both ends.</p>
       </div>
     </li>
 
@@ -197,5 +400,24 @@
   <footer>Prices and stock checked October 2026.</footer>
 
 </div>
+
+<script>
+  // Turntable plus each budget's amp, speakers and wire, rounded
+  var totals = { 0: "about $1,100", 1: "about $1,050", 2: "about $1,500", 3: "about $2,450" };
+  var buttons = document.querySelectorAll(".tiers button");
+  buttons.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var tier = btn.dataset.tier;
+      buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
+      document.querySelectorAll(".pick").forEach(function (p) {
+        p.classList.toggle("is-active", p.dataset.tier === tier);
+      });
+      document.querySelectorAll(".pick-text").forEach(function (el) {
+        el.textContent = tier === "0" ? el.dataset.powered : el.dataset.amp;
+      });
+      document.getElementById("grand-total").textContent = totals[tier];
+    });
+  });
+</script>
 </body>
 </html>
