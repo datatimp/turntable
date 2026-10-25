@@ -174,6 +174,15 @@
     background: var(--accent-soft); color: var(--ink);
   }
 
+  /* Setup diagrams */
+  .diagram { margin: 16px 0 4px; }
+  .diagram svg { display: block; width: 100%; max-width: 440px; height: auto; margin: 0 auto; }
+  .dg-box { fill: var(--bg); stroke: var(--muted); stroke-width: 1.25; }
+  .dg-name { fill: var(--ink); font: 600 14px Inter, system-ui, sans-serif; }
+  .dg-model { fill: var(--muted); font: 400 12px Inter, system-ui, sans-serif; }
+  .dg-wire { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .dg-label { fill: var(--accent); font: 600 12px Inter, system-ui, sans-serif; }
+
   footer { margin-top: 36px; color: var(--muted); font-size: 14px; }
 </style>
 </head>
@@ -376,6 +385,57 @@
         <span class="step-label">Step 4 · Cables</span>
         <h2>Hooking it up</h2>
 
+        <div class="diagram pick is-active" data-tier="1 2 3">
+          <svg viewBox="0 0 340 250" role="img" aria-label="Setup: the record player cable goes into the amp's PHONO input. Speaker wire runs from the amp to each speaker.">
+            <rect class="dg-box" x="90" y="10" width="160" height="50" rx="8"/>
+            <text class="dg-name" x="170" y="31" text-anchor="middle">Record player</text>
+            <text class="dg-model" x="170" y="48" text-anchor="middle">Denon DP-300F</text>
+
+            <path class="dg-wire" d="M170 60 V100"/>
+            <text class="dg-label" x="180" y="78">Attached cable</text>
+            <text class="dg-label" x="180" y="93">into PHONO</text>
+
+            <rect class="dg-box" x="90" y="100" width="160" height="50" rx="8"/>
+            <text class="dg-name" x="170" y="121" text-anchor="middle">Amp</text>
+            <text class="dg-model tier-text" x="170" y="138" text-anchor="middle" data-t1="Sony STR-DH190" data-t2="Denon PMA-600NE" data-t3="Denon PMA-900HNE">Sony STR-DH190</text>
+
+            <path class="dg-wire" d="M170 150 V172 M85 200 V172 H255 V200"/>
+            <text class="dg-label" x="170" y="192" text-anchor="middle">Speaker wire</text>
+
+            <rect class="dg-box" x="10" y="200" width="150" height="45" rx="8"/>
+            <text class="dg-name" x="85" y="219" text-anchor="middle">Left speaker</text>
+            <text class="dg-model tier-text" x="85" y="235" text-anchor="middle" data-t1="Polk Monitor XT20" data-t2="ELAC Debut 3.0 DB53" data-t3="KEF Q3 Meta">Polk Monitor XT20</text>
+
+            <rect class="dg-box" x="180" y="200" width="150" height="45" rx="8"/>
+            <text class="dg-name" x="255" y="219" text-anchor="middle">Right speaker</text>
+            <text class="dg-model tier-text" x="255" y="235" text-anchor="middle" data-t1="Polk Monitor XT20" data-t2="ELAC Debut 3.0 DB53" data-t3="KEF Q3 Meta">Polk Monitor XT20</text>
+          </svg>
+        </div>
+
+        <div class="diagram pick" data-tier="0">
+          <svg viewBox="0 0 340 225" role="img" aria-label="Setup: the record player cable goes into the PHONO input on the main speaker. Speaker wire links the main speaker to the second speaker. The main speaker plugs into the wall.">
+            <rect class="dg-box" x="90" y="10" width="160" height="50" rx="8"/>
+            <text class="dg-name" x="170" y="31" text-anchor="middle">Record player</text>
+            <text class="dg-model" x="170" y="48" text-anchor="middle">Denon DP-300F</text>
+
+            <path class="dg-wire" d="M170 60 V85 H80 V120"/>
+            <text class="dg-label" x="180" y="78">Attached cable</text>
+            <text class="dg-label" x="90" y="108">into PHONO</text>
+
+            <rect class="dg-box" x="10" y="120" width="140" height="60" rx="8"/>
+            <text class="dg-name" x="80" y="139" text-anchor="middle">Main speaker</text>
+            <text class="dg-model" x="80" y="155" text-anchor="middle">Kanto YU6, amp inside</text>
+            <text class="dg-model" x="80" y="170" text-anchor="middle">Plugs into the wall</text>
+
+            <path class="dg-wire" d="M80 180 V200 H260 V180"/>
+            <text class="dg-label" x="170" y="218" text-anchor="middle">Speaker wire</text>
+
+            <rect class="dg-box" x="190" y="120" width="140" height="60" rx="8"/>
+            <text class="dg-name" x="260" y="139" text-anchor="middle">Second speaker</text>
+            <text class="dg-model" x="260" y="155" text-anchor="middle">Kanto YU6</text>
+          </svg>
+        </div>
+
         <div class="cable">
           <h3>Record player cable</h3>
           <p>It comes attached to the record player. Keep the record player within about 3 feet of the <span class="pick-text" data-amp="amp" data-powered="speaker it plugs into">amp</span>.</p>
@@ -410,7 +470,10 @@
       var tier = btn.dataset.tier;
       buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
       document.querySelectorAll(".pick").forEach(function (p) {
-        p.classList.toggle("is-active", p.dataset.tier === tier);
+        p.classList.toggle("is-active", p.dataset.tier.split(" ").indexOf(tier) !== -1);
+      });
+      document.querySelectorAll(".tier-text").forEach(function (el) {
+        if (el.dataset["t" + tier]) el.textContent = el.dataset["t" + tier];
       });
       document.querySelectorAll(".pick-text").forEach(function (el) {
         el.textContent = tier === "0" ? el.dataset.powered : el.dataset.amp;
