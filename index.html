@@ -18,6 +18,10 @@
     --accent: #a2322a;
     --accent-ink: #ffffff;
     --accent-soft: #f4e2de;
+    --gold: #b8913f;
+    --gold-ink: #0f0c09;
+    --gold-text: #86672a;
+    --gold-soft: #f4eddd;
     --shadow: 0 1px 2px rgb(34 29 24 / 6%), 0 8px 24px rgb(34 29 24 / 6%);
   }
   @media (prefers-color-scheme: dark) {
@@ -30,6 +34,10 @@
       --accent: #e0675c;
       --accent-ink: #1a1210;
       --accent-soft: #3a2421;
+      --gold: #c8a45e;
+      --gold-ink: #0f0c09;
+      --gold-text: #c8a45e;
+      --gold-soft: #262016;
       --shadow: none;
     }
   }
@@ -42,6 +50,10 @@
     --accent: #e0675c;
     --accent-ink: #1a1210;
     --accent-soft: #3a2421;
+    --gold: #c8a45e;
+    --gold-ink: #0f0c09;
+    --gold-text: #c8a45e;
+    --gold-soft: #262016;
     --shadow: none;
   }
 
@@ -75,11 +87,13 @@
     padding: 12px 0 14px;
     margin-bottom: 8px;
   }
-  .picker-label { font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 8px; }
+  .start { margin-top: 8px; }
+  .start .step-label { color: var(--gold-text); }
+  .start p { color: var(--muted); margin: 6px 0 0; }
   .tiers {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
-    background: var(--surface); border: 1px solid var(--line);
-    border-radius: 14px; padding: 5px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+    background: var(--gold-soft); border: 1px solid var(--gold);
+    border-radius: 18px; padding: 10px;
   }
   @media (min-width: 560px) {
     .tiers { grid-template-columns: repeat(4, 1fr); }
@@ -92,8 +106,8 @@
   .tiers button span { display: block; }
   .tiers .t-name { font-weight: 600; font-size: 15px; }
   .tiers .t-range { font-size: 13px; color: var(--muted); }
-  .tiers button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-  .tiers button[aria-pressed="true"] .t-range { color: var(--accent-ink); opacity: 0.85; }
+  .tiers button[aria-pressed="true"] { background: var(--gold); color: var(--gold-ink); }
+  .tiers button[aria-pressed="true"] .t-range { color: var(--gold-ink); }
   .tiers button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .total { margin: 10px 0 0; font-size: 15px; color: var(--muted); }
   .total strong { color: var(--ink); }
@@ -155,7 +169,7 @@
   @media (hover: hover) {
     .btn-primary:hover { filter: brightness(1.08); }
     .btn-secondary:hover { border-color: var(--muted); }
-    .tiers button:not([aria-pressed="true"]):hover { background: var(--accent-soft); }
+    .tiers button:not([aria-pressed="true"]):hover { background: var(--surface); }
   }
 
   /* Only the chosen budget's pick shows */
@@ -195,8 +209,13 @@
     <p class="lede">Everything you need to start playing records. Pick a budget, then buy the steps below.</p>
   </header>
 
+  <div class="start">
+    <span class="step-label">Start here</span>
+    <h2 id="picker-label">Pick a budget</h2>
+    <p>This is for the amp and speakers. The steps below change to match.</p>
+  </div>
+
   <div class="picker">
-    <p class="picker-label" id="picker-label">Budget for the amp and speakers</p>
     <div class="tiers" role="group" aria-labelledby="picker-label">
       <button type="button" data-tier="1" aria-pressed="true"><span class="t-name">Starter</span><span class="t-range">$400 to $600</span></button>
       <button type="button" data-tier="2" aria-pressed="false"><span class="t-name">Step up</span><span class="t-range">$700 to $1,000</span></button>
